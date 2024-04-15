@@ -15,7 +15,7 @@ export default class NotFoundComponent extends KWM_Component {
     return /*html*/ `
         <section id="main_content">
             <h1>${this.text}</h1>
-            <img src="https://mailchimp.com/static/images/404Horse.gif?w=780&fm=png&q=70" />
+            <img class="not-found" src="https://mailchimp.com/static/images/404Horse.gif?w=780&fm=png&q=70" />
             <p><a href="#/">Back to Home</a></p>
         </section>
         `;

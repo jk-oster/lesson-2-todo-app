@@ -33,9 +33,9 @@ const myRouter = new KWM_Router({
       component: new ContactComponent(),
       // (Bonus) make sure if the user is allowed to see the component - when not - redirect to 404
       canRender: () =>
-        confirm("🛡️ Security check: Everything ok?")
-          ? true
-          : KWM_Router.redirect("/404"),
+          confirm("🛡️ Security check: Everything ok?")
+              ? true
+              : KWM_Router.redirect("/404"),
     }),
     new KWM_Route({
       slug: "/404",
@@ -48,5 +48,3 @@ const myRouter = new KWM_Router({
 });
 
 myRouter.init();
-
-// Navigating to the home page should display the Hero-Teaser similar like in the example picture

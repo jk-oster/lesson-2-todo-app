@@ -1,32 +1,59 @@
-'use strict';
-
+"use strict";
 import KWM_Component from '../core/kwm-component.js';
+import KWM_Computed from '../core/kwm-computed.js';
 import KWM_Observable from '../core/kwm-observable.js';
+import { todoModelInstance } from '../models/TodoModel.js';
 
 export default class TodoComponent extends KWM_Component {
     constructor() {
         super();
+
+        this.todos = todoModelInstance.todos;
         this.newTodoText = new KWM_Observable('');
-        this.newTodoText.subscribe(console.log);
-        this.todos = new KWM_Observable([]);
-        this.registerRenderDependencies([this.todos]); // Register the observables that when changed trigger a rerender
+
+        this.openTodos = new KWM_Computed(() => {
+            return this.todos.value.filter(todo => !todo.completed);
+        }, [this.todos]);
+
+        this.todos.subscribe(() => this.render());
     }
+
     addTodo() {
-        const newTodoText = this.newTodoText.value;
-        this.todos.value = [...this.todos.value, newTodoText];
+        if (this.newTodoText.value.trim() !== '') {
+            todoModelInstance.addTodo(this.newTodoText.value);
+        }
+        this.newTodoText.value = '';
+    }
+
+    removeTodo(todoId) {
+        todoModelInstance.removeTodo(todoId);
+    }
+
+    toggleTodo(todoId) {
+        todoModelInstance.toggleTodo(todoId);
     }
 
     template() {
-        return /*html*/`
-        <section id="todo_app">
-          <input type="text" kwm-bind-value="newTodoText" />
-          <button kwm-listen-click="addTodo">
-              Add Todo
-          </button>
-          <ul>
-          ${ this.todos.value.map(todo => /*html*/`<li>${todo}</li>`).join('') }
-          </ul>
-        </section>`;
+        return `
+            <div>
+                <h2>Todo List</h2>
+                <input kwm-model-value="this.newTodoText" />
+                <button kwm-listen-click="this.addTodo()">Add Todo</button>
+
+                <h3>Open Todos</h3>
+                <ul>
+                    ${this.openTodos.value.map(todo => `
+                        <li>
+                            <input kwm-listen-click="this.toggleTodo(${todo.id})" type="checkbox" ${todo.completed ? 'checked' : '' } />
+                            <span>${todo.text}</span>
+                            <button kwm-listen-click="this.removeTodo(${todo.id})">Remove</button>
+                        </li>
+                    `).join('')}
+                </ul>
+
+            </div>
+        `;
     }
 }
+
 customElements.define('todo-component', TodoComponent);
